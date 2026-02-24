@@ -11,7 +11,7 @@ const isSubmitting = ref(false);
 const showBark = ref(false);
 
 // Your Flask Backend URL
-const API_URL = 'https://sofia-portfolio-backend.onrender.com/api/messages';
+const API_URL = 'https://revilla-final-website.onrender.com/api/messages';
 
 // GET Method: Fetch comments from the backend
 const fetchMessages = async () => {
