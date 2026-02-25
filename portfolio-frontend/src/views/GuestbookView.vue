@@ -5,8 +5,8 @@ import { ref, onMounted } from 'vue';
 // 🌟 SUPABASE CONFIGURATION 🌟
 // Paste your URL and ANON KEY below:
 // ==========================================
-const SUPABASE_URL = 'YOUR_SUPABASE_URL_HERE'; 
-const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY_HERE';
+const SUPABASE_URL = 'https://bprvptimhkrtkkuplkyi.supabase.co'; 
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwcnZwdGltaGtydGtrdXBsa3lpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE5MzY3MTksImV4cCI6MjA4NzUxMjcxOX0.y74FNwCzX3PPWplYVw4qSQsLYQdmuGLbsusl8XDsliI';
 
 const messages = ref([]);
 const newName = ref('');
