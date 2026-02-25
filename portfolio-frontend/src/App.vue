@@ -1,31 +1,22 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
 import { RouterView } from 'vue-router';
-// RESTORED THE LOADING SCREEN IMPORT:
 import WelcomeLoader from './components/WelcomeLoader.vue';
 
-// Global State
-const isLoaded = ref(false); // Changed back to false to show loader
+const isLoaded = ref(false); 
 const isDarkMode = ref(false);
 
-// Cursor & Interaction State
-const mouseX = ref(0);
-const mouseY = ref(0);
 const isHovering = ref(false);
 let clickParticles = [];
 let clickCtx = null;
 let clickCanvas = null;
 
-// Modal & UI State
 const showSideNav = ref(false);
 const showContactModal = ref(false);
-const showRefModal = ref(false);
 
-// Audio Player State
 const isPlaying = ref(false);
 const audioRef = ref(null);
 
-// Leaf Animation Array
 const leaves = Array.from({ length: 20 }, (_, i) => ({
   id: i,
   left: Math.random() * 100,
@@ -34,22 +25,34 @@ const leaves = Array.from({ length: 20 }, (_, i) => ({
   size: 1 + Math.random() * 1.5
 }));
 
-// Cursor Logic
+// ==========================================
+// 🐕 100% BULLETPROOF CURSOR LOGIC
+// ==========================================
 const updateCursor = (e) => {
-  mouseX.value = e.clientX;
-  mouseY.value = e.clientY;
+  const paw = document.getElementById('paw-cursor');
+  const outline = document.getElementById('cursor-outline');
+  
+  if (paw && outline) {
+    paw.style.left = `${e.clientX}px`;
+    paw.style.top = `${e.clientY}px`;
+    
+    outline.animate({ 
+      left: `${e.clientX}px`, 
+      top: `${e.clientY}px` 
+    }, { duration: 500, fill: "forwards" });
+  }
+
   isHovering.value = e.target.closest('a, button, .sfx-trigger, .polaroid, .project-card, .info-card') !== null;
 };
 
-// Paw Print Click Effect (Replaced Fireworks)
 const createFirework = (e) => {
-  for (let i = 0; i < 6; i++) { // 6 paws per click
+  for (let i = 0; i < 6; i++) { 
     clickParticles.push({
       x: e.clientX, y: e.clientY,
       vx: (Math.random() - 0.5) * 6,
-      vy: (Math.random() - 0.5) * 6 - 2, // Slight upward burst
+      vy: (Math.random() - 0.5) * 6 - 2, 
       life: 1,
-      size: Math.random() * 15 + 15 // Random size between 15px and 30px
+      size: Math.random() * 15 + 15 
     });
   }
 };
@@ -60,13 +63,12 @@ const animateFireworks = () => {
     clickParticles.forEach((p, i) => {
       p.x += p.vx; 
       p.y += p.vy; 
-      p.life -= 0.03; // Fade out speed
+      p.life -= 0.03; 
       
       clickCtx.globalAlpha = Math.max(0, p.life);
       clickCtx.font = `${p.size}px sans-serif`;
       clickCtx.textAlign = 'center';
       clickCtx.textBaseline = 'middle';
-      // Drawing paw prints!
       clickCtx.fillText('🐾', p.x, p.y); 
       
       if(p.life <= 0) clickParticles.splice(i, 1);
@@ -82,14 +84,10 @@ const resizeCanvas = () => {
   }
 };
 
-// Audio Logic
 const toggleAudio = () => {
   if (audioRef.value) {
-    if (isPlaying.value) {
-      audioRef.value.pause();
-    } else {
-      audioRef.value.play();
-    }
+    if (isPlaying.value) { audioRef.value.pause(); } 
+    else { audioRef.value.play(); }
     isPlaying.value = !isPlaying.value;
   }
 };
@@ -115,31 +113,25 @@ onUnmounted(() => {
 
 const toggleTheme = () => {
   isDarkMode.value = !isDarkMode.value;
+  document.documentElement.classList.toggle('dark-mode', isDarkMode.value);
   document.body.classList.toggle('dark-mode', isDarkMode.value);
 };
 </script>
 
 <template>
-  <canvas id="click-canvas" style="position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9999999;"></canvas>
+  <canvas id="click-canvas" class="desktop-only" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 9999999;"></canvas>
 
   <div class="leaf-container" aria-hidden="true">
     <div 
       v-for="leaf in leaves" 
       :key="leaf.id" 
       class="falling-leaf"
-      :style="{ 
-        left: leaf.left + '%', 
-        animationDuration: leaf.duration + 's', 
-        animationDelay: '-' + leaf.delay + 's',
-        fontSize: leaf.size + 'rem'
-      }"
-    >
-      🍃
-    </div>
+      :style="{ left: leaf.left + 'vw', animationDuration: leaf.duration + 's', animationDelay: '-' + leaf.delay + 's', fontSize: leaf.size + 'rem' }"
+    >🍃</div>
   </div>
 
-  <div class="paw-cursor" :style="{ left: mouseX + 'px', top: mouseY + 'px' }">🐕</div>
-  <div class="cursor-outline" :class="{ 'hovering': isHovering }" :style="{ left: mouseX + 'px', top: mouseY + 'px' }"></div>
+  <div id="paw-cursor" class="paw-cursor desktop-only">🐕</div>
+  <div id="cursor-outline" class="cursor-outline desktop-only" :class="{ 'hovering': isHovering }"></div>
   
   <Transition name="fade">
     <WelcomeLoader v-if="!isLoaded" @enter-site="isLoaded = true" />
@@ -232,32 +224,30 @@ const toggleTheme = () => {
   --text-main: #0f172a;
   --text-light: #8fa1b3;
   --body-bg-image: url('https://png.pngtree.com/background/20210715/original/pngtree-white-simple-texture-background-picture-image_1323742.jpg');
-  --hero-bg: url('https://i.pinimg.com/originals/c4/15/be/c415be334309ccf0b19a2c0a44c73331.gif');
 }
 
-/* EXACT MATCH TO YOUR DARK MODE IMAGE */
+/* FULL DARK MODE OVERRIDES */
+html.dark-mode, 
 body.dark-mode {
+  background-color: #121212 !important; 
+  background-image: none !important;
+  color: #e4e6eb;
   --bg-color: #121212; 
   --card-white: #242424; 
   --primary-blue: #6c8af1; 
   --primary-dark: #242424; 
   --text-main: #e4e6eb; 
   --text-light: #a0a0a0;
-  --body-bg-image: none; 
-  --hero-bg: url('https://i.pinimg.com/originals/e5/40/08/e54008fec896ec085da559cf537d6f32.gif');
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; cursor: none !important; }
 
-/* FIX FOR DARK MODE BACKGROUND CUT OFF */
+/* FIX FOR DARK MODE BACKGROUND CUT OFF & SCROLL ISSUES */
 html, body { 
   min-height: 100vh;
-  height: 100%;
-}
-
-html {
-  background-color: var(--bg-color); /* Fallback */
-  transition: background-color 0.3s;
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 body { 
@@ -272,22 +262,11 @@ body {
   background-position: center;
 }
 
-.app-master { max-width: 1400px; margin: 0 auto; padding: 20px; position: relative; z-index: 2;}
+.app-master { max-width: 1400px; margin: 0 auto; padding: 20px; position: relative;}
 
 /* --- FALLING LEAVES GLOBALS --- */
-.leaf-container {
-  position: fixed;
-  top: 0; left: 0; width: 100%; height: 100%;
-  pointer-events: none;
-  z-index: 1; 
-  overflow: hidden;
-}
-.falling-leaf {
-  position: absolute;
-  top: -10%;
-  animation: fallDown linear infinite;
-  opacity: 0.6;
-}
+.leaf-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 1; overflow: hidden; }
+.falling-leaf { position: absolute; top: -10%; animation: fallDown linear infinite; opacity: 0.6; }
 @keyframes fallDown {
   0% { transform: translate(0, 0) rotate(0deg); opacity: 0; }
   10% { opacity: 0.6; }
@@ -295,25 +274,14 @@ body {
   100% { transform: translate(100px, 110vh) rotate(360deg); opacity: 0; }
 }
 
-/* Custom Cursor Fixes - Z-Index set to MAX so it never disappears! */
+/* ==================================
+   FIXED CURSOR 
+   ================================== */
 .paw-cursor { 
-  position: fixed; 
-  font-size: 28px; 
-  z-index: 2147483647 !important; /* Maximum possible z-index */
-  transform: translate(-50%, -50%); 
-  pointer-events: none; 
-  text-shadow: 0 0 10px var(--primary-blue); 
+  position: fixed; top: 0; left: 0; font-size: 28px; z-index: 2147483647 !important; pointer-events: none; text-shadow: 0 0 10px var(--primary-blue); transform: translate(-50%, -50%); 
 }
 .cursor-outline { 
-  position: fixed; 
-  width: 40px; 
-  height: 40px; 
-  border: 2px solid var(--primary-blue); 
-  border-radius: 50%; 
-  transform: translate(-50%, -50%); 
-  pointer-events: none; 
-  transition: width 0.2s, height 0.2s, background-color 0.2s; 
-  z-index: 2147483646 !important; 
+  position: fixed; top: 0; left: 0; width: 40px; height: 40px; border: 2px solid var(--primary-blue); border-radius: 50%; pointer-events: none; transition: width 0.2s, height 0.2s, background-color 0.2s; z-index: 2147483646 !important; transform: translate(-50%, -50%);
 }
 .cursor-outline.hovering { width: 60px; height: 60px; background-color: rgba(108, 138, 241, 0.2); }
 
@@ -335,22 +303,16 @@ body.dark-mode .btn-fill { background: #333; }
 .heart-fab:hover { transform: scale(1.1) rotate(5deg); }
 .heart-fab img { width: 100%; height: 100%; object-fit: contain; }
 
-/* --- GUESTBOOK BOTTOM LEAF BUTTON --- */
+/* Bottom Leaf Button */
 .bottom-guestbook-section { text-align: center; margin-top: 80px; margin-bottom: 20px;}
-.guestbook-note { font-family: 'Courier New', monospace; color: var(--text-light); margin-bottom: 15px; font-weight: bold;}
-.leaf-button { 
-  display: inline-block;
-  background: linear-gradient(135deg, #4ade80, #166534); 
-  color: white; 
-  padding: 15px 30px; 
-  border-radius: 0 25px 0 25px; /* Leaf shape! */
-  text-decoration: none; 
-  font-weight: bold; 
-  font-size: 1.1rem;
-  box-shadow: 0 10px 20px rgba(22, 101, 52, 0.3);
-  transition: 0.3s;
-}
+.guestbook-note { font-family: 'Courier New', monospace; color: var(--text-light); margin-bottom: 15px; font-weight: bold; transition: 0.3s;}
+.leaf-button { display: inline-block; background: linear-gradient(135deg, #4ade80, #166534); color: white; padding: 15px 30px; border-radius: 0 25px 0 25px; text-decoration: none; font-weight: bold; font-size: 1.1rem; box-shadow: 0 10px 20px rgba(22, 101, 52, 0.3); transition: 0.3s; }
 .leaf-button:hover { transform: scale(1.05) rotate(-2deg); box-shadow: 0 15px 25px rgba(22, 101, 52, 0.5); }
+
+/* Glows */
+body.dark-mode .leaf-button { box-shadow: 0 0 20px rgba(74, 222, 128, 0.4); border: 1px solid rgba(74, 222, 128, 0.5); }
+body.dark-mode .leaf-button:hover { box-shadow: 0 0 35px rgba(74, 222, 128, 0.8); }
+body.dark-mode .guestbook-note { text-shadow: 0 0 10px rgba(255, 255, 255, 0.2); }
 
 /* Side Navigation */
 .side-nav { position: fixed; top: 0; right: -300px; width: 300px; height: 100vh; background: var(--card-white); box-shadow: -5px 0 20px rgba(0,0,0,0.1); z-index: 10000; padding: 40px; display: flex; flex-direction: column; gap: 20px; transition: 0.4s ease-in-out; }
@@ -364,7 +326,7 @@ body.dark-mode .btn-fill { background: #333; }
 /* Modals */
 .modal-overlay { display: flex; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 100000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
 .modal-content { background: var(--card-white); padding: 40px; border-radius: 20px; max-width: 500px; width: 90%; text-align: center; color: var(--text-main); position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.2); animation: popIn 0.3s ease; }
-body.dark-mode .modal-content { background: #242424; color: white;}
+body.dark-mode .modal-content { background: #242424; color: white; border: 1px solid rgba(108, 138, 241, 0.4); box-shadow: 0 0 30px rgba(108, 138, 241, 0.3);}
 .close-modal { position: absolute; top: 15px; right: 25px; font-size: 30px; color: var(--text-light); transition: 0.3s; }
 .close-modal:hover { color: var(--primary-blue); transform: scale(1.2); }
 .modal-body-text p { margin-bottom: 15px; font-size: 0.95rem; }
@@ -372,6 +334,7 @@ body.dark-mode .modal-content { background: #242424; color: white;}
 /* Music Player */
 .music-player-wrapper { position: fixed; bottom: 30px; left: 30px; z-index: 9000; }
 .music-player { background: var(--card-white); padding: 15px; border-radius: 20px; display: flex; align-items: center; gap: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); border: 1px solid rgba(108, 138, 241, 0.2); }
+body.dark-mode .music-player { box-shadow: 0 0 15px rgba(108, 138, 241, 0.2); }
 .player-thumb img { width: 50px; height: 50px; border-radius: 12px; object-fit: cover; }
 .player-info h5 { margin: 0; font-size: 0.9rem; color: var(--text-main); }
 .player-info p { margin: 0; font-size: 0.75rem; color: var(--text-light); }
@@ -379,15 +342,39 @@ body.dark-mode .modal-content { background: #242424; color: white;}
 .progress-fill { width: 0%; height: 100%; background: var(--primary-blue); }
 .progress-fill.animating { animation: playProgress 30s linear infinite; }
 .player-controls { display: flex; gap: 10px; color: var(--primary-blue); font-size: 1.2rem; align-items: center; }
-.player-controls .bi-play-circle-fill, .player-controls .bi-pause-circle-fill { font-size: 1.8rem; }
 
-/* Loader Transition */
 .fade-enter-active, .fade-leave-active { transition: opacity 0.8s; }
 .fade-enter-from, .fade-leave-to { opacity: 0; }
-
-/* Footer */
 .site-footer { text-align: center; margin-top: 10px; padding-bottom: 20px; color: var(--text-light); font-size: 0.85rem; font-family: 'Courier New', monospace; }
 
 @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 @keyframes playProgress { from { width: 0%; } to { width: 100%; } }
+
+/* ====================================================
+   📱 RESPONSIVE MOBILE MEDIA QUERIES
+==================================================== */
+
+/* Table / Small Desktop */
+@media (max-width: 992px) {
+  .nav-bar { flex-direction: column; gap: 20px; }
+  .nav-auth-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+  .nav-menu { text-align: center; }
+}
+
+/* Mobile Devices */
+@media (max-width: 768px) {
+  .music-player-wrapper { bottom: 15px; left: 15px; right: 15px; z-index: 1000; }
+  .music-player { width: 100%; justify-content: space-between; }
+  .heart-fab { width: 50px; height: 50px; top: 10px; right: 10px; }
+  .side-nav { width: 100%; right: -100%; } 
+  .modal-content { width: 95%; padding: 30px; }
+  .app-master { padding: 10px; }
+}
+
+/* 🛑 TOUCH SCREEN FIX 🛑 
+   Disables the custom cursor on mobile phones/tablets so it doesn't get stuck! */
+@media (hover: none) and (pointer: coarse) {
+  .desktop-only { display: none !important; }
+  * { cursor: auto !important; }
+}
 </style>

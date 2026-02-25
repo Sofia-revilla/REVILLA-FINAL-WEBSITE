@@ -1,7 +1,5 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
-
-// ⚠️ IF YOU DON'T HAVE THIS FILE CREATED YET, ADD // IN FRONT OF THIS LINE:
 import LifeGallery from '../components/LifeGallery.vue'; 
 
 const showResume = ref(false);
@@ -101,7 +99,6 @@ onUnmounted(() => {
       
       <div class="hero-img-wrapper sfx-trigger">
         <img src="/image/me.png" alt="Active Character" class="char-light" />
-        
         <img src="/img/mesleep.png" alt="Sleeping Character" class="char-dark" />
       </div>
     </section>
@@ -258,12 +255,11 @@ onUnmounted(() => {
   </div>
 </template>
 
-
 <style scoped>
-/* --- HERO BANNER --- */
+/* --- HERO BANNER (WITH HARDCODED GIFS) --- */
 .hero-banner {
   position: relative; 
-  background-image: var(--hero-bg); 
+  background-image: url('https://i.pinimg.com/originals/c4/15/be/c415be334309ccf0b19a2c0a44c73331.gif') !important; 
   background-size: cover; 
   background-position: center;
   border-radius: 20px; 
@@ -278,8 +274,9 @@ onUnmounted(() => {
   overflow: visible !important; 
 }
 
+:global(html.dark-mode) .hero-banner,
 :global(body.dark-mode) .hero-banner {
-  background-image: var(--hero-bg-dark);
+  background-image: url('https://i.pinimg.com/originals/e5/40/08/e54008fec896ec085da559cf537d6f32.gif') !important;
 }
 
 .hero-text { position: relative; z-index: 2; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
@@ -290,36 +287,18 @@ onUnmounted(() => {
 
 /* --- OVERLAP IMAGE LOGIC --- */
 .hero-img-wrapper { 
-  position: absolute; 
-  right: 50px; 
-  bottom: 0px; 
-  height: 145%; 
-  z-index: 10; 
-  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.4s; 
+  position: absolute; right: 50px; bottom: 0px; 
+  height: 145%; z-index: 10; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.4s; 
 }
 
-.hero-img-wrapper:hover {
-  transform: scale(1.05) translateY(-10px);
-  filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.7));
-}
+.hero-img-wrapper:hover { transform: scale(1.05) translateY(-10px); filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.7)); }
+:global(body.dark-mode) .hero-img-wrapper:hover { filter: drop-shadow(0 0 20px rgba(108, 138, 241, 0.6)); }
 
-:global(body.dark-mode) .hero-img-wrapper:hover {
-  filter: drop-shadow(0 0 20px rgba(108, 138, 241, 0.6)); 
-}
+.hero-img-wrapper img { position: absolute; bottom: 0; right: 0; height: 100%; object-fit: contain; transform-origin: bottom center; }
 
-.hero-img-wrapper img { 
-  position: absolute; 
-  bottom: 0; 
-  right: 0; 
-  height: 100%; 
-  object-fit: contain; 
-  transform-origin: bottom center; 
-  transition: opacity 0.5s ease; 
-}
-
-/* Base states for images before Dark Mode overrides them */
-.char-light { opacity: 1; pointer-events: auto; }
-.char-dark { opacity: 0; pointer-events: none; }
+/* Default State */
+.char-light { display: block; }
+.char-dark { display: none; }
 
 /* --- RESUME & PAPER SHEET --- */
 .resume-toggle-btn { width: 100%; background: transparent; color: var(--primary-blue); padding: 15px; border-radius: 20px; border: 2px dashed var(--primary-blue); font-weight: bold; transition: 0.3s; }
@@ -328,35 +307,26 @@ onUnmounted(() => {
 
 .paper-sheet { background: #fdfbf7; color: #333; padding: 40px; border-left: 5px solid #d14444; font-family: 'Courier New', monospace; margin-top: 15px; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
 :global(body.dark-mode) .paper-sheet { background-color: #1e1e1e; color: #ccc; border-left: 5px solid #6c8af1; }
-
 .paper-header h2 { margin-bottom: 5px; font-weight: bold; letter-spacing: 1px; }
 .paper-header p { font-weight: bold; color: #555; }
 :global(body.dark-mode) .paper-header p { color: #aaa; }
-
 .paper-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 .resume-item { display: flex; flex-direction: column; }
 .full-width { grid-column: 1 / -1; }
 .resume-label { font-weight: bold; color: #d14444; margin-bottom: 5px; text-transform: uppercase; font-size: 0.9rem; border-bottom: 1px solid #ddd; padding-bottom: 5px;}
 :global(body.dark-mode) .resume-label { color: #6c8af1; border-bottom: 1px solid #333;}
 .resume-value { font-size: 0.95rem; line-height: 1.6; }
-
 .experience-box { background: rgba(0,0,0,0.03); padding: 15px; border-radius: 8px; font-size: 0.95rem; line-height: 1.6; }
 :global(body.dark-mode) .experience-box { background: rgba(255,255,255,0.05); }
 
-/* --- GLOBAL CARD STYLING FOR DARK MODE --- */
+/* --- GLOBAL CARDS --- */
 .cyber-card { background: var(--card-white); padding: 40px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
-:global(body.dark-mode) .cyber-card,
-:global(body.dark-mode) .project-card,
-:global(body.dark-mode) .info-card { background: var(--card-white); color: var(--text-main); border-radius: 15px; border: none; box-shadow: none; }
-
 .title-blue { color: var(--primary-blue); }
 :global(body.dark-mode) h3, :global(body.dark-mode) h4 { color: var(--text-main); }
 :global(body.dark-mode) .title-blue { color: var(--primary-blue) !important; }
 
 .dashboard-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 30px; }
 .section-header { font-size: 1.2rem; font-weight: bold; margin-bottom: 20px; color: var(--text-main); }
-
-/* --- CAPABILITIES SECTION --- */
 .cap-card { background: var(--primary-dark); color: white; }
 .cap-title { color: white; }
 :global(body.dark-mode) .cap-title { color: var(--text-main); border-bottom: 1px solid #444 !important; }
@@ -368,23 +338,19 @@ onUnmounted(() => {
 :global(body.dark-mode) .cap-item { background: #333333; border: 1px solid #3d3d3d; }
 :global(body.dark-mode) .cap-icon { background: #444444; }
 
-/* --- PROJECTS GRID --- */
 .projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
 .project-card { background: white; padding: 25px; border-radius: 15px; text-align: center; transition: 0.3s; border: 1px solid transparent; box-shadow: 0 5px 15px rgba(0,0,0,0.05); cursor: pointer; }
 .project-card:hover { transform: translateY(-5px); border-color: var(--primary-blue); }
 .p-icon { font-size: 2rem; color: var(--primary-blue); margin-bottom: 10px; }
 :global(body.dark-mode) .project-card p { color: var(--text-light); font-size: 0.85rem; }
 
-/* --- POLAROIDS --- */
 .polaroid-container { display: flex; flex-wrap: wrap; gap: 20px; }
 .polaroid { background: white; padding: 10px 10px 40px; width: 140px; box-shadow: 5px 8px 15px rgba(0,0,0,0.2); transform: rotate(var(--r)); transition: 0.3s; position: relative; cursor: pointer; }
 .polaroid:hover { transform: scale(1.1) rotate(0deg); z-index: 10;}
 .polaroid img { width: 100%; height: 120px; object-fit: cover; }
 .polaroid span { position: absolute; bottom: 10px; left: 0; width: 100%; text-align: center; color: black; font-family: 'Courier New'; font-weight: bold; font-size: 0.9rem;}
-:global(body.dark-mode) .polaroid { background: var(--card-white); border: 1px solid #333; box-shadow: none; }
 :global(body.dark-mode) .polaroid span { color: var(--text-main); }
 
-/* --- INFO LIST (Goals & Hobbies) --- */
 .info-list { display: flex; flex-direction: column; gap: 15px; }
 .info-card { background: white; padding: 20px; border-radius: 15px; display: flex; gap: 15px; align-items: center; transition: 0.3s; border: 1px solid transparent; }
 .info-card:hover { transform: translateX(5px); border-color: var(--primary-blue); }
@@ -394,7 +360,6 @@ onUnmounted(() => {
 :global(body.dark-mode) .info-img { background: #333333; }
 :global(body.dark-mode) .info-content p { color: var(--text-light); }
 
-/* --- LIGHTBOX & MODALS --- */
 .lightbox { display: flex; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 100000; justify-content: center; align-items: center; flex-direction: column; backdrop-filter: blur(5px); }
 .lightbox-content { max-width: 90%; max-height: 70vh; object-fit: contain; border-radius: 10px; box-shadow: 0 0 50px rgba(255,255,255,0.1); animation: zoom 0.3s; }
 .close-btn, .close-modal { position: absolute; top: 20px; right: 30px; font-size: 40px; color: white; cursor: pointer; transition: 0.3s; }
@@ -406,30 +371,58 @@ onUnmounted(() => {
 #caption, #album-counter { color: #ccc; margin-top: 15px; font-family: 'Courier New', monospace; font-size: 1.2rem; }
 
 .modal-content { background: var(--card-white); padding: 40px; border-radius: 20px; max-width: 500px; width: 90%; text-align: center; color: var(--text-main); position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.2); animation: zoom 0.3s ease; }
-:global(body.dark-mode) .modal-content { background: #242424; color: white;}
-:global(body.dark-mode) .close-modal { color: white; }
 
 .mt-3 { margin-top: 15px; }
 .mt-5 { margin-top: 40px; }
-
 @keyframes zoom { from {transform:scale(0.9); opacity:0;} to {transform:scale(1); opacity:1;} }
 .expand-enter-active, .expand-leave-active { transition: all 0.5s ease; max-height: 800px; overflow: hidden; opacity: 1; }
 .expand-enter-from, .expand-leave-to { max-height: 0; opacity: 0; margin-top: 0; padding-top: 0; padding-bottom: 0; border: none; }
+
+/* ====================================================
+   📱 MOBILE RESPONSIVENESS (@MEDIA QUERIES)
+==================================================== */
+@media (max-width: 1024px) {
+  .dashboard-grid { grid-template-columns: 1fr; gap: 40px; } 
+  .polaroid-container { justify-content: center; } 
+}
+
+@media (max-width: 768px) {
+  /* Fix the Hero Banner so image doesn't overflow text */
+  .hero-banner { 
+    height: auto; 
+    flex-direction: column; 
+    text-align: center; 
+    padding: 40px 20px; 
+    padding-bottom: 0; /* Let image touch bottom */
+  }
+  
+  .hero-img-wrapper { 
+    position: relative; 
+    right: 0; 
+    height: 250px; 
+    width: 100%; 
+    display: flex; 
+    justify-content: center; 
+    margin-top: 20px; 
+  }
+  
+  .hero-img-wrapper img { position: relative; object-fit: contain; }
+  .hero-text h1 { font-size: 2.5rem; }
+
+  /* Stack resume columns */
+  .paper-grid { grid-template-columns: 1fr; }
+  
+  /* Make cards stretch full width nicely */
+  .cyber-card { padding: 25px; }
+  .cap-card { height: 320px; }
+}
 </style>
 
 <style>
-body.dark-mode .char-light {
-  opacity: 0 !important;
-  pointer-events: none !important;
-}
+body.dark-mode .char-light { display: none !important; }
 
-body.dark-mode .char-dark {
-  opacity: 1 !important;
-  pointer-events: auto !important;
-  
-  /* The breathing animation only applies to the Dark image now.
-    It uses 'scale' instead of 'translateY' so it does NOT shift the whole page. 
-  */
+body.dark-mode .char-dark { 
+  display: block !important; 
   animation: sleepingBreath 4s infinite ease-in-out !important; 
 }
 
